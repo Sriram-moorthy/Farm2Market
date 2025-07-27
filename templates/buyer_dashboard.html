@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - Farm2Market</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Farm2Market</a>
+                <ul class="nav-links">
+                    <li><a href="#" id="buyerName">{{ user.full_name }}</a></li>
+                    <li><a href="/cart?user_id={{ user.id }}">🛒 Cart <span id="cartBadge" class="hidden">0</span></a></li>
+                    <li>
+                        <select id="languageSwitcher" onchange="farm2market.changeLanguage(this.value)">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="ta">தமிழ்</option>
+                        </select>
+                    </li>
+                    <li><a href="/">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1>🛒 Welcome, {{ user.full_name }}!</h1>
+                    <p>Discover fresh crops directly from farmers</p>
+                </div>
+                
+                <div class="dashboard-content">
+                    <!-- Search and Filters -->
+                    <div class="search-filters">
+                        <h3>🔍 Find Fresh Crops</h3>
+                        <div class="filter-row">
+                            <div class="form-group">
+                                <input type="text" id="searchInput" placeholder="Search for crops..." 
+                                       data-translate="search">
+                            </div>
+                            <div class="form-group">
+                                <select id="locationFilter" class="filter-input">
+                                    <option value="">All Locations</option>
+                                    <option value="mumbai">Mumbai</option>
+                                    <option value="delhi">Delhi</option>
+                                    <option value="bangalore">Bangalore</option>
+                                    <option value="chennai">Chennai</option>
+                                    <option value="pune">Pune</option>
+                                    <option value="hyderabad">Hyderabad</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="minPrice" placeholder="Min Price" class="filter-input">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="maxPrice" placeholder="Max Price" class="filter-input">
+                            </div>
+                            <button class="btn" onclick="farm2market.applyFilters()">
+                                🔍 Search
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Categories -->
+                    <div style="margin: 2rem 0;">
+                        <h3>🏷️ Popular Categories</h3>
+                        <div class="categories">
+                            <div class="category-tags">
+                                <button class="category-tag" onclick="searchByCategory('vegetables')" data-translate="vegetables">
+                                    🥬 Vegetables
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('fruits')" data-translate="fruits">
+                                    🍎 Fruits
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('grains')" data-translate="grains">
+                                    🌾 Grains
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('rice')" data-translate="rice">
+                                    🍚 Rice
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('wheat')" data-translate="wheat">
+                                    🌾 Wheat
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('pulses')" data-translate="pulses">
+                                    🫘 Pulses
+                                </button>
+                                <button class="category-tag" onclick="searchByCategory('spices')" data-translate="spices">
+                                    🌶️ Spices
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Recommendations -->
+                    <div id="recommendations-container">
+                        <!-- AI recommendations will be loaded here -->
+                    </div>
+
+                    <!-- Available Crops -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                            <h2>🌱 Available Crops</h2>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span id="cropCount">{{ crops|length }} crops available</span>
+                                <select id="sortBy" onchange="sortCrops()">
+                                    <option value="name">Sort by Name</option>
+                                    <option value="price_low">Price: Low to High</option>
+                                    <option value="price_high">Price: High to Low</option>
+                                    <option value="newest">Newest First</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="cropsContainer" class="crops-grid">
+                            <!-- Crops will be dynamically loaded here -->
+                            <div class="no-results" style="grid-column: 1 / -1;">
+                                <h3>Loading crops...</h3>
+                                <p>Please wait while we fetch the latest crop listings.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Info Section -->
+    <section style="padding: 4rem 0; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+        <div class="container">
+            <h2 style="text-align: center; color: white; margin-bottom: 3rem; font-size: 2rem;">
+                How It Works
+            </h2>
+            <div class="grid grid-3">
+                <div class="card text-center">
+                    <h3>1. 🔍 Browse</h3>
+                    <p>Search and filter through available crops from verified farmers in your area.</p>
+                </div>
+                <div class="card text-center">
+                    <h3>2. 💬 Connect</h3>
+                    <p>Chat directly with farmers to ask questions about quality, farming practices, and delivery.</p>
+                </div>
+                <div class="card text-center">
+                    <h3>3. 🛒 Purchase</h3>
+                    <p>Add crops to your cart and pay securely. Get fresh produce delivered to your doorstep.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Add to Cart Modal (Initially hidden) -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeQuickAddModal()">&times;</span>
+            <h3>Add to Cart</h3>
+            <form id="quickAddForm">
+                <input type="hidden" id="modalCropId">
+                <div class="form-group">
+                    <label for="modalQuantity">Quantity:</label>
+                    <input type="number" id="modalQuantity" name="quantity" min="1" value="1" step="1">
+                    <span id="modalUnit"></span>
+                </div>
+                <div class="form-group">
+                    <p><strong>Total Price:</strong> <span id="modalTotalPrice"></span></p>
+                </div>
+                <button type="submit" class="btn">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Add to Cart Modal -->
+    <div id="quickAddModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add to Cart</h3>
+                <button class="modal-close" onclick="closeQuickAddModal()">×</button>
+            </div>
+            <form id="quickAddForm">
+                <input type="hidden" id="modalCropId" name="crop_id">
+                <input type="hidden" name="buyer_id" value="{{ user.id }}">
+                
+                <div class="form-group">
+                    <label for="modalQuantity">Quantity (<span id="modalUnit">kg</span>):</label>
+                    <input type="number" id="modalQuantity" name="quantity" min="0.1" step="0.1" value="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Price:</label>
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #4CAF50;">
+                        <span id="modalTotalPrice">₹0.00</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Assistant Toggle Button -->
+    <button class="ai-assistant-toggle" id="aiToggle" title="Chat with AI Assistant">🤖</button>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant-panel" id="aiPanel">
+        <div class="ai-assistant-header">
+            <div>
+                <h3>🤖 Farm2Market AI Assistant</h3>
+                <small>Powered by Gemini AI</small>
+            </div>
+            <button class="ai-assistant-minimize" id="aiMinimize">×</button>
+        </div>
+        <div class="ai-assistant-messages" id="aiMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="ai-assistant-input">
+            <input type="text" id="aiInput" placeholder="Ask me anything about farming or our platform..." maxlength="500">
+            <button class="ai-assistant-send" id="aiSend">📤</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let currentCrop = null;
+        
+        function searchByCategory(category) {
+            document.getElementById('searchInput').value = category;
+            farm2market.searchCrops(category);
+        }
+        
+        function sortCrops() {
+            const sortBy = document.getElementById('sortBy').value;
+            const container = document.getElementById('cropsContainer');
+            const cards = Array.from(container.children);
+            
+            cards.sort((a, b) => {
+                const cropA = {
+                    name: a.dataset.cropName,
+                    price: parseFloat(a.dataset.cropPrice),
+                    id: a.dataset.cropId
+                };
+                const cropB = {
+                    name: b.dataset.cropName,
+                    price: parseFloat(b.dataset.cropPrice),
+                    id: b.dataset.cropId
+                };
+                
+                switch(sortBy) {
+                    case 'name':
+                        return cropA.name.localeCompare(cropB.name);
+                    case 'price_low':
+                        return cropA.price - cropB.price;
+                    case 'price_high':
+                        return cropB.price - cropA.price;
+                    case 'newest':
+                        return 0; // Can't sort by date without that info
+                    default:
+                        return 0;
+                }
+            });
+            
+            cards.forEach(card => container.appendChild(card));
+        }
+        
+        function openQuickAddModal(cropId, cropName, unit, price) {
+            document.getElementById('modalCropId').value = cropId;
+            document.getElementById('modalUnit').textContent = unit;
+            document.getElementById('modalQuantity').value = '1';
+            updateModalTotalPrice(price);
+            document.getElementById('quickAddModal').classList.remove('hidden');
+        }
+
+        function closeQuickAddModal() {
+            document.getElementById('quickAddModal').classList.add('hidden');
+        }
+
+        function updateModalTotalPrice(price) {
+            const quantity = document.getElementById('modalQuantity').value;
+            const totalPrice = (quantity * price).toFixed(2);
+            document.getElementById('modalTotalPrice').textContent = `₹${totalPrice}`;
+        }
+        
+        // Event delegation for opening the modal
+        document.getElementById('cropsContainer').addEventListener('click', function(e) {
+            if (e.target.classList.contains('add-to-cart-btn')) {
+                const card = e.target.closest('.crop-card');
+                openQuickAddModal(
+                    card.dataset.cropId,
+                    card.dataset.cropName,
+                    card.dataset.cropUnit,
+                    parseFloat(card.dataset.cropPrice)
+                );
+            }
+        });
+
+        // Form submission for adding to cart
+        document.getElementById('quickAddForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const cropId = document.getElementById('modalCropId').value;
+            const quantity = document.getElementById('modalQuantity').value;
+            farm2market.addToCart(cropId, quantity);
+            closeQuickAddModal();
+        });
+
+        // Update total price on quantity change
+        document.getElementById('modalQuantity').addEventListener('input', function(e) {
+            const card = document.querySelector(`.crop-card[data-crop-id="${document.getElementById('modalCropId').value}"]`);
+            updateModalTotalPrice(parseFloat(card.dataset.cropPrice));
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('quickAddModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQuickAddModal();
+            }
+        });
+        
+        // Load initial crops if user exists
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-search on page load to populate from backend data
+            farm2market.searchCrops('');
+        });
+        
+        // Auto-complete search with debouncing
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                farm2market.searchCrops(e.target.value);
+            }, 300);
+        });
+    </script>
+</body>
+</html> 

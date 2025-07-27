@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile_user.full_name }} - Farm2Market</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1>🌾 Farm2Market</h1>
+                </div>
+                <div class="nav-links">
+                    {% if current_user %}
+                        <span>Welcome, {{ current_user.full_name }}</span>
+                        <a href="/{{ current_user.role }}-dashboard?user_id={{ current_user.id }}">Dashboard</a>
+                    {% else %}
+                        <a href="/">Home</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <span>{{ profile_user.full_name[0].upper() }}</span>
+                    </div>
+                    <div class="profile-details">
+                        <h1>{{ profile_user.full_name }}</h1>
+                        <p class="profile-role">{{ profile_user.role|title }}</p>
+                        {% if profile_user.location %}
+                            <p class="profile-location">📍 {{ profile_user.location }}</p>
+                        {% endif %}
+                        <p class="profile-contact">📧 {{ profile_user.email }}</p>
+                        <p class="profile-contact">📞 {{ profile_user.phone }}</p>
+                    </div>
+                </div>
+                
+                {% if current_user and current_user.id != profile_user.id %}
+                <div class="profile-actions">
+                    <button class="btn btn-primary" onclick="window.location.href='/chat?user_id={{ current_user.id }}&other_user_id={{ profile_user.id }}'">
+                        💬 Chat with {{ profile_user.full_name.split()[0] }}
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if profile_user.role == "farmer" %}
+            <!-- Farmer Ratings Section -->
+            <div id="farmer-ratings-container">
+                <!-- Farmer ratings will be loaded here -->
+            </div>
+            {% endif %}
+
+            {% if profile_user.role == "farmer" and crops %}
+            <div class="profile-crops">
+                <h2>🌾 {{ profile_user.full_name.split()[0] }}'s Crops</h2>
+                <div class="crops-grid">
+                    {% for crop in crops %}
+                    <div class="crop-card">
+                        <div class="crop-image">
+                            {% if crop.image_url %}
+                                <img src="{{ crop.image_url }}" alt="{{ crop.name }}" loading="lazy">
+                            {% else %}
+                                <div class="crop-placeholder">🌾</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="crop-info">
+                            <h3 class="crop-name">{{ crop.name|title }}</h3>
+                            <p class="crop-quantity">{{ crop.quantity }} {{ crop.unit }}</p>
+                            <p class="crop-location">📍 {{ crop.location }}</p>
+                            <div class="crop-price">₹{{ crop.price }}/{{ crop.unit }}</div>
+                        </div>
+                        
+                        {% if current_user and current_user.role == "buyer" %}
+                        <div class="crop-actions">
+                            <button class="btn btn-primary" onclick="window.location.href='/chat?user_id={{ current_user.id }}&other_user_id={{ profile_user.id }}'">
+                                💬 Contact Farmer
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% elif profile_user.role == "farmer" %}
+            <div class="empty-state">
+                <h3>No crops listed yet</h3>
+                <p>{{ profile_user.full_name.split()[0] }} hasn't listed any crops yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Load farmer ratings if viewing a farmer profile
+        document.addEventListener('DOMContentLoaded', function() {
+            const farmerId = '{{ profile_user.id }}';
+            const role = '{{ profile_user.role }}';
+            
+            if (role === 'farmer') {
+                // Load farmer ratings
+                farm2market.getFarmerRatings(farmerId).then(ratingsData => {
+                    if (ratingsData) {
+                        farm2market.displayFarmerRatings(ratingsData, 'farmer-ratings-container');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

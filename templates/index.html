@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm2Market - Connecting Farmers with Buyers</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Farm2Market</a>
+                <ul class="nav-links">
+                    <li><a href="#about" data-translate="about">About</a></li>
+                    <li><a href="#features" data-translate="features">Features</a></li>
+                    <li><a href="#contact" data-translate="contact">Contact</a></li>
+                    <li>
+                        <select id="languageSwitcher" onchange="farm2market.changeLanguage(this.value)">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="ta">தமிழ்</option>
+                        </select>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero">
+        <div class="container">
+            <h1 data-translate="welcome">வரவேற்கிறோம்</h1>
+            <p data-translate="hero_description">Connecting small and marginal farmers directly with buyers through a transparent, AI-powered marketplace</p>
+            
+            <!-- Role Selection -->
+            <div class="role-selection">
+                <a href="/farmer-auth" class="role-card" data-role="farmer">
+                    <span class="icon">👨‍🌾</span>
+                    <h3 data-translate="farmer_role">விவசாயி</h3>
+                    <p data-translate="farmer_description">List your crops, get fair prices, and connect with buyers directly</p>
+                </a>
+                
+                <a href="/buyer-auth" class="role-card" data-role="buyer">
+                    <span class="icon">🛒</span>
+                    <h3 data-translate="buyer_role">I'm a Buyer</h3>
+                    <p data-translate="buyer_description">Find fresh crops directly from farmers at transparent prices</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section id="features" style="padding: 4rem 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
+        <div class="container">
+            <h2 class="section-heading">Why Choose Farm2Market?</h2>
+            <div class="grid grid-3">
+                <div class="card">
+                    <h3 data-translate="direct_connection">🤝 Direct Connection</h3>
+                    <p data-translate="direct_connection_desc">Eliminate middlemen and connect farmers directly with buyers for better prices and fresher produce.</p>
+                </div>
+                <div class="card">
+                    <h3 data-translate="ai_pricing">🤖 AI-Powered Pricing</h3>
+                    <p data-translate="ai_pricing_desc">Get intelligent price suggestions based on market data, location, and crop quality.</p>
+                </div>
+                <div class="card">
+                    <h3 data-translate="realtime_communication">💬 Real-time Communication</h3>
+                    <p data-translate="realtime_communication_desc">Chat directly with farmers and buyers to negotiate and coordinate deliveries.</p>
+                </div>
+                <div class="card">
+                    <h3 data-translate="mobile_friendly">📱 Mobile Friendly</h3>
+                    <p data-translate="mobile_friendly_desc">Access the platform from any device - desktop, tablet, or mobile phone.</p>
+                </div>
+                <div class="card">
+                    <h3>🚚 Delivery Support</h3>
+                    <p>Track your orders and coordinate delivery options with farmers and delivery partners.</p>
+                </div>
+                <div class="card">
+                    <h3>⭐ Rating System</h3>
+                    <p>Build trust through our transparent rating and review system for all users.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" style="padding: 4rem 0; color: #1b4332;">
+        <div class="container">
+            <div class="grid grid-2" style="align-items: center;">
+                <div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">About Farm2Market</h2>
+                    <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 2rem;">
+                        Farm2Market is a revolutionary platform designed to bridge the gap between small-scale farmers and buyers. 
+                        We believe in fair trade, transparent pricing, and sustainable agriculture.
+                    </p>
+                    <p style="font-size: 1.1rem; line-height: 1.8;">
+                        Our AI-powered marketplace ensures that farmers get the best prices for their produce while buyers 
+                        get access to fresh, quality crops directly from the source.
+                    </p>
+                </div>
+                <div style="text-align: center; font-size: 8rem;">
+                    🌾🤝🛒
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" style="padding: 4rem 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);">
+        <div class="container">
+            <h2 class="section-heading">Get in Touch</h2>
+            <div class="grid grid-2">
+                <div class="contact-text">
+                    <h3 style="margin-bottom: 1rem;">Contact Information</h3>
+                    <p style="margin-bottom: 1rem;">📧 support@farm2market.com</p>
+                    <p style="margin-bottom: 1rem;">📞 +91 9876543210</p>
+                    <p style="margin-bottom: 1rem;">📍 Bangalore, Karnataka, India</p>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0;">Follow Us</h3>
+                    <div style="display: flex; gap: 1rem;">
+                                            <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📷</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Send us a Message</h3>
+                    <form>
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea rows="4" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-full">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #1b4332, #2d5a41); color: white; text-align: center; padding: 2rem 0;">
+        <div class="container">
+            <p>&copy; 2024 Farm2Market. All rights reserved. Made with ❤️ for farmers and buyers.</p>
+        </div>
+    </footer>
+
+    <!-- AI Assistant Toggle Button -->
+    <button class="ai-assistant-toggle" id="aiToggle" title="Chat with AI Assistant">🤖</button>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant-panel" id="aiPanel">
+        <div class="ai-assistant-header">
+            <div>
+                <h3>🤖 Farm2Market AI Assistant</h3>
+                <small>Powered by Gemini AI</small>
+            </div>
+            <button class="ai-assistant-minimize" id="aiMinimize">×</button>
+        </div>
+        <div class="ai-assistant-messages" id="aiMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="ai-assistant-input">
+            <input type="text" id="aiInput" placeholder="Ask me anything about farming or our platform..." maxlength="500">
+            <button class="ai-assistant-send" id="aiSend">📤</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Farm2Market</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Farm2Market</a>
+                <ul class="nav-links">
+                    <li><a href="{% if user.role == 'farmer' %}/farmer-dashboard?user_id={{ user.id }}{% else %}/buyer-dashboard?user_id={{ user.id }}{% endif %}">Dashboard</a></li>
+                    <li><a href="#" id="userName">{{ user.full_name }}</a></li>
+                    <li><a href="/">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div>
+                        <h3>💬 Chat with {{ other_user.full_name }}</h3>
+                        <p>
+                            {% if other_user.role == 'farmer' %}
+                                🌾 Farmer from {{ other_user.location }}
+                            {% else %}
+                                🛒 Buyer
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span id="connectionStatus" style="color: #4CAF50;">● Online</span>
+                        <button class="btn btn-secondary" onclick="toggleUserInfo()">
+                            ℹ️ Info
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="message {% if message.sender_id == user.id %}sent{% else %}received{% endif %}">
+                                <div>{{ message.content }}</div>
+                                <small style="opacity: 0.7; font-size: 0.8rem;">
+                                    {{ message.timestamp.strftime('%I:%M %p') }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="text-align: center; padding: 2rem; color: #666;">
+                            <p>👋 Start the conversation!</p>
+                            <p>Say hello to {{ other_user.full_name }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Message Input -->
+                <div class="chat-input">
+                    <textarea id="chatInput" 
+                              placeholder="Type your message..." 
+                              maxlength="500" 
+                              rows="3"
+                              style="resize: vertical; min-height: 60px; font-weight: 600; font-size: 16px; padding: 12px;"
+                              onkeydown="handleChatKeydown(event)"></textarea>
+                    <button class="btn" id="sendMessage">
+                        📤 Send
+                    </button>
+                </div>
+                
+                <!-- Hidden inputs for WebSocket -->
+                <input type="hidden" id="receiverId" value="{{ other_user.id }}">
+                <input type="hidden" id="currentUserId" value="{{ user.id }}">
+            </div>
+            
+            <!-- User Info Panel (Initially Hidden) -->
+            <div id="userInfoPanel" class="card hidden" style="margin-top: 2rem;">
+                <h3>👤 {{ other_user.full_name }}</h3>
+                <div style="margin: 1rem 0;">
+                    <p><strong>Role:</strong> 
+                        {% if other_user.role == 'farmer' %}
+                            🌾 Farmer
+                        {% else %}
+                            🛒 Buyer
+                        {% endif %}
+                    </p>
+                    <p><strong>Email:</strong> {{ other_user.email }}</p>
+                    <p><strong>Phone:</strong> {{ other_user.phone }}</p>
+                    {% if other_user.location %}
+                        <p><strong>Location:</strong> {{ other_user.location }}</p>
+                    {% endif %}
+                    <p><strong>Age:</strong> {{ other_user.age }} years</p>
+                </div>
+                
+                {% if other_user.role == 'farmer' %}
+                    <div style="margin-top: 2rem;">
+                        <h4>🌱 Available Crops</h4>
+                        <div id="farmerCrops" style="margin-top: 1rem;">
+                            <!-- Crops will be loaded dynamically -->
+                            <p style="color: #666;">Loading crops...</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>⚡ Quick Actions</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                    {% if user.role == 'buyer' and other_user.role == 'farmer' %}
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('Hi! I am interested in your crops. Can you tell me more about them?')">
+                            🌾 Inquire about crops
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('What are the prices for your available crops?')">
+                            💰 Ask about prices
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('Do you provide delivery services?')">
+                            🚚 Ask about delivery
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('Are your crops organic?')">
+                            🌱 Ask about organic
+                        </button>
+                    {% elif user.role == 'farmer' and other_user.role == 'buyer' %}
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('Hello! Thank you for your interest in my crops.')">
+                            👋 Welcome message
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('I have fresh crops available. Would you like to place an order?')">
+                            📦 Offer crops
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('I can arrange delivery to your location.')">
+                            🚚 Offer delivery
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendQuickMessage('All my crops are grown using organic farming methods.')">
+                            🌱 Mention organic
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Typing Indicator -->
+    <div id="typingIndicator" class="hidden" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">
+        {{ other_user.full_name }} is typing...
+    </div>
+
+    <!-- AI Assistant Toggle Button -->
+    <button class="ai-assistant-toggle" id="aiToggle" title="Chat with AI Assistant">🤖</button>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant-panel" id="aiPanel">
+        <div class="ai-assistant-header">
+            <div>
+                <h3>🤖 Farm2Market AI Assistant</h3>
+                <small>Powered by Gemini AI</small>
+            </div>
+            <button class="ai-assistant-minimize" id="aiMinimize">×</button>
+        </div>
+        <div class="ai-assistant-messages" id="aiMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="ai-assistant-input">
+            <input type="text" id="aiInput" placeholder="Ask me anything about farming or our platform..." maxlength="500">
+            <button class="ai-assistant-send" id="aiSend">📤</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let typingTimer;
+        let isTyping = false;
+        
+        function toggleUserInfo() {
+            const panel = document.getElementById('userInfoPanel');
+            panel.classList.toggle('hidden');
+            
+            // Load farmer crops if showing farmer info
+            if (!panel.classList.contains('hidden') && '{{ other_user.role }}' === 'farmer') {
+                loadFarmerCrops();
+            }
+        }
+        
+        function sendQuickMessage(message) {
+            const chatInput = document.getElementById('chatInput');
+            chatInput.value = message;
+            farm2market.sendMessage();
+        }
+        
+        function loadFarmerCrops() {
+            const farmerId = '{{ other_user.id }}';
+            
+            // In a real app, this would fetch from an API
+            fetch(`/api/crops?farmer_id=${farmerId}`)
+                .then(response => response.json())
+                .then(crops => {
+                    const container = document.getElementById('farmerCrops');
+                    
+                    if (crops.length === 0) {
+                        container.innerHTML = '<p style="color: #666;">No crops listed yet.</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = crops.map(crop => `
+                        <div style="border: 1px solid #e1e1e1; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
+                            <h5>${crop.name} - ₹${crop.price}/${crop.unit}</h5>
+                            <p>Quantity: ${crop.quantity} ${crop.unit}</p>
+                            <p>Location: ${crop.location}</p>
+                            {% if user.role == 'buyer' %}
+                                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="sendQuickMessage('I am interested in your ${crop.name}. Can we discuss the details?')">
+                                    💬 Ask about this crop
+                                </button>
+                            {% endif %}
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error loading crops:', error);
+                    document.getElementById('farmerCrops').innerHTML = '<p style="color: #f44336;">Failed to load crops.</p>';
+                });
+        }
+        
+        // Enhanced message display
+        function displayMessage(message, isSent) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // Remove welcome message if it exists
+            const welcomeMsg = messagesContainer.querySelector('[style*="text-align: center"]');
+            if (welcomeMsg) {
+                welcomeMsg.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            const time = new Date(message.timestamp || new Date()).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            messageDiv.innerHTML = `
+                <div>${message.content}</div>
+                <small style="opacity: 0.7; font-size: 0.8rem;">${time}</small>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Show notification for received messages
+            if (!isSent) {
+                // Briefly show typing indicator stopped
+                hideTypingIndicator();
+                
+                // Show browser notification if page is not visible
+                if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+                    new Notification(`Message from {{ other_user.full_name }}`, {
+                        body: message.content,
+                        icon: '/static/images/logo.png'
+                    });
+                }
+            }
+        }
+        
+        // Typing indicator functions
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('hidden');
+        }
+        
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('hidden');
+        }
+        
+        // Override the displayMessage function in farm2market
+        if (window.farm2market) {
+            farm2market.displayMessage = displayMessage;
+        }
+        
+        // Typing detection
+        document.getElementById('chatInput').addEventListener('input', function() {
+            if (!isTyping) {
+                isTyping = true;
+                // In a real app, send typing indicator to other user
+                console.log('User started typing');
+            }
+            
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                isTyping = false;
+                console.log('User stopped typing');
+            }, 1000);
+        });
+        
+        // Simulate receiving typing indicator (in a real app, this would come via WebSocket)
+        function simulateTypingIndicator() {
+            showTypingIndicator();
+            setTimeout(hideTypingIndicator, 2000);
+        }
+        
+        // Connection status management
+        function updateConnectionStatus(status) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (status === 'connected') {
+                statusElement.innerHTML = '● Online';
+                statusElement.style.color = '#4CAF50';
+            } else if (status === 'connecting') {
+                statusElement.innerHTML = '● Connecting...';
+                statusElement.style.color = '#ff9800';
+            } else {
+                statusElement.innerHTML = '● Offline';
+                statusElement.style.color = '#f44336';
+            }
+        }
+        
+        // Handle Enter key in chat input
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevent new line
+                sendMessage(); // Send the message
+            }
+        }
+        
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // Auto-scroll to bottom on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Focus on input
+            document.getElementById('chatInput').focus();
+        });
+        
+        // Handle connection events if WebSocket is available
+        if (window.farm2market && farm2market.websocket) {
+            farm2market.websocket.addEventListener('open', () => {
+                updateConnectionStatus('connected');
+            });
+            
+            farm2market.websocket.addEventListener('close', () => {
+                updateConnectionStatus('connecting');
+            });
+            
+            farm2market.websocket.addEventListener('error', () => {
+                updateConnectionStatus('offline');
+            });
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Hide user info panel
+                document.getElementById('userInfoPanel').classList.add('hidden');
+            }
+        });
+        
+        // Mobile optimizations
+        if (window.innerWidth <= 768) {
+            // Adjust chat container height for mobile
+            const chatContainer = document.querySelector('.chat-messages');
+            chatContainer.style.height = '300px';
+        }
+    </script>
+</body>
+</html> 

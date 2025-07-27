@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Signup/Login - Farm2Market</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Farm2Market</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/buyer-auth">Buyer Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <div class="container">
+            <!-- Auth Container -->
+            <div class="auth-container">
+                <!-- Left Side - Info -->
+                <div class="auth-info">
+                    <div class="auth-info-content">
+                        <div class="auth-icon">👨‍🌾</div>
+                        <h2>Join as a Farmer</h2>
+                        <p>Start selling your crops directly to buyers and get fair prices</p>
+                        
+                        <div class="auth-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">📦</span>
+                                <span>List your crops easily</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">💰</span>
+                                <span>Get AI-powered price suggestions</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🤝</span>
+                                <span>Connect directly with buyers</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📱</span>
+                                <span>Manage everything from your phone</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side - Form -->
+                <div class="auth-form-container">
+                    <div class="auth-form" id="signupForm">
+                        <h3>Create Your Account</h3>
+                        <p>Fill in your details to get started</p>
+                
+                <form action="/signup" method="POST" id="farmerSignupForm">
+                    <input type="hidden" name="role" value="farmer">
+                    
+                    <div class="form-group">
+                        <label for="full_name">Full Name *</label>
+                        <input type="text" id="full_name" name="full_name" required 
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age *</label>
+                        <input type="number" id="age" name="age" min="18" max="100" required 
+                               placeholder="Enter your age">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="Enter your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required 
+                               placeholder="Enter your 10-digit phone number"
+                               pattern="[6-9][0-9]{9}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Create a strong password"
+                               minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" name="location" required 
+                               placeholder="Enter your location (e.g., Village, District, State)"
+                               autocomplete="off">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-full">
+                        Create Farmer Account
+                    </button>
+                </form>
+                
+                <p style="text-align: center; margin-top: 1.5rem; color: #666;">
+                    Already have an account? 
+                    <a href="#" onclick="showLoginForm()" style="color: #4CAF50; text-decoration: none;">
+                        Login here
+                    </a>
+                </p>
+            </div>
+
+            <!-- Login Form (Initially Hidden) -->
+            <div class="form-container hidden" id="loginForm">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">
+                    👨‍🌾 Farmer Login
+                </h2>
+                <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+                    Welcome back! Login to manage your crops
+                </p>
+                
+                <form action="/login" method="POST" id="farmerLoginForm">
+                    <input type="hidden" name="role" value="farmer">
+                    
+                    <div class="form-group">
+                        <label for="login_email">Email Address</label>
+                        <input type="email" id="login_email" name="email" required 
+                               placeholder="Enter your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login_password">Password</label>
+                        <input type="password" id="login_password" name="password" required 
+                               placeholder="Enter your password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-full">
+                        Login to Dashboard
+                    </button>
+                </form>
+                
+                        <p style="text-align: center; margin-top: 1.5rem; color: #666;">
+                            New to Farm2Market? 
+                            <a href="#" onclick="showSignupForm()" style="color: #4CAF50; text-decoration: none;">
+                                Create an account
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Benefits Section -->
+    <section style="padding: 4rem 0; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+        <div class="container">
+            <h2 style="text-align: center; color: white; margin-bottom: 3rem; font-size: 2rem;">
+                Why Farmers Love Farm2Market
+            </h2>
+            <div class="grid grid-3">
+                <div class="card">
+                    <h3>💰 Better Prices</h3>
+                    <p>Get fair market prices for your crops without middlemen taking a cut.</p>
+                </div>
+                <div class="card">
+                    <h3>🤖 AI Price Suggestions</h3>
+                    <p>Use our AI to get optimal pricing recommendations for your crops.</p>
+                </div>
+                <div class="card">
+                    <h3>📱 Easy Listing</h3>
+                    <p>List your crops in minutes with our simple and intuitive interface.</p>
+                </div>
+                <div class="card">
+                    <h3>💬 Direct Communication</h3>
+                    <p>Chat directly with buyers to negotiate and build relationships.</p>
+                </div>
+                <div class="card">
+                    <h3>🚚 Delivery Options</h3>
+                    <p>Choose between self-delivery or use our delivery partner network.</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Market Insights</h3>
+                    <p>Get insights about market trends and demand for your crops.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant Toggle Button -->
+    <button class="ai-assistant-toggle" id="aiToggle" title="Chat with AI Assistant">🤖</button>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant-panel" id="aiPanel">
+        <div class="ai-assistant-header">
+            <div>
+                <h3>🤖 Farm2Market AI Assistant</h3>
+                <small>Powered by Gemini AI</small>
+            </div>
+            <button class="ai-assistant-minimize" id="aiMinimize">×</button>
+        </div>
+        <div class="ai-assistant-messages" id="aiMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="ai-assistant-input">
+            <input type="text" id="aiInput" placeholder="Ask me anything about farming or our platform..." maxlength="500">
+            <button class="ai-assistant-send" id="aiSend">📤</button>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        function showLoginForm() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+        
+        function showSignupForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        // Demo login functionality
+        document.getElementById('farmerLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login_email').value;
+            const phone = document.getElementById('login_phone').value;
+            
+            if (email && phone) {
+                // For demo purposes, create a user with dummy data
+                const formData = new FormData();
+                formData.append('full_name', 'Demo Farmer');
+                formData.append('age', '35');
+                formData.append('email', email);
+                formData.append('phone', phone);
+                formData.append('location', 'Demo Village, Demo State');
+                formData.append('role', 'farmer');
+                
+                fetch('/signup', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                }).catch(error => {
+                    console.error('Login error:', error);
+                    farm2market.showNotification('Login failed. Please try again.', 'error');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
